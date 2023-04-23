@@ -14,7 +14,6 @@ public class Partita {
 
 	private Giocatore giocatore;
 	private Labirinto labirinto;
-	private Stanza stanzaCorrente;
 	private boolean finita;
 
 	
@@ -22,7 +21,6 @@ public class Partita {
 		this.labirinto = new Labirinto();
 		this.finita = false;
 		this.giocatore = new Giocatore();
-		this.stanzaCorrente = this.labirinto.getStanzaCorrente();
 	}
 	
 	/**
@@ -30,14 +28,14 @@ public class Partita {
 	 * per accedere a stanzaCorrente e Vincente, ma permetto l'accesso da Partita
 	 */ 
 	public void setStanzaCorrente(Stanza stanzaCorrente) {
-		this.stanzaCorrente = stanzaCorrente;
+		this.labirinto.setStanzaCorrente(stanzaCorrente);
 	}
 	public void setStanzaVincente(Stanza stanzaVincente) {
 		this.labirinto.setStanzaVincente(stanzaVincente);
 	}
 	
 	public Stanza getStanzaCorrente() {
-		return this.stanzaCorrente;
+		return this.labirinto.getStanzaCorrente();
 	}
 	public Stanza getStanzaVincente() {
 		return this.labirinto.getStanzaVincente();
@@ -92,5 +90,13 @@ public class Partita {
 	 */
 	public Giocatore getGiocatore() {
 		return this.giocatore;
+	}
+	
+	/**
+	 * GiocatoreIsVivo
+	 * @return boolean value che indica se il giocatore è vivo o meno (cfu esauriti o no)
+	 */
+	public boolean giocatoreIsVivo() {
+		return getCfu() != 0;
 	}
 }

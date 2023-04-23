@@ -3,7 +3,7 @@ package it.uniroma3.diadia.Ambienti;
 import it.uniroma3.diadia.Attrezzo.Attrezzo;
 
 public class Labirinto {
-	private Stanza stanzaIniziale, stanzaVincente;
+	private Stanza stanzaCorrente, stanzaVincente;
 	
 	public Labirinto() {
 		creaStanze();
@@ -41,15 +41,19 @@ public class Labirinto {
 		atrio.addAttrezzo(osso);
 		
 		// il gioco comincia nell'atrio
-        this.stanzaIniziale = atrio;  
+        this.stanzaCorrente = atrio;  
 		this.stanzaVincente = biblioteca;
     }
-  
+    
+    public Stanza getStanzaCorrente() {
+    	return this.stanzaCorrente;
+    }
     public Stanza getStanzaVincente() {
     	return this.stanzaVincente;
     }
-    public Stanza getStanzaCorrente() {
-    	return this.stanzaIniziale;
+    
+    public void setStanzaCorrente(Stanza stanzaCorrente) {
+    	this.stanzaCorrente = stanzaCorrente;
     }
     public void setStanzaVincente(Stanza stanzaVincente) {
     	this.stanzaVincente = stanzaVincente;

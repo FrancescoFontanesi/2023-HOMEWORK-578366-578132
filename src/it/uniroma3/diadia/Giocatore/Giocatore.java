@@ -31,9 +31,11 @@ public class Giocatore {
 	public boolean prendiAttrezzo(Attrezzo attrezzo) {
 		return this.borsa.addAttrezzo(attrezzo);
 	}
+	
 	public Attrezzo posaAttrezzo(String nomeAttrezzo) {
 		return this.borsa.removeAttrezzo(nomeAttrezzo);
 	}
+	
 	public boolean hasAttrezzo(String nomeAttrezzo) {
 		return this.borsa.hasAttrezzo(nomeAttrezzo);
 	}
