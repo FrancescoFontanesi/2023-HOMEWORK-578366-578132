@@ -1,22 +1,30 @@
 package it.uniroma3.diadia.Partita;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+
 
 public class IOSimulator implements IO {
-	private String[] istruzioniIN;
-	private String[] msgGioco;
+	private List<String> istruzioniIN, msgGioco;
+	private Map<String,List<String>> recordIstruzione;
 	
 	private final static int MAX_MSG = 50;
 	
 	private int istruzioniDate;
 	private int daMemorizzare;
 	private int msgCorrente;
+	private String istrCorrente;
 	
-	public IOSimulator(String[] istruzioniIN) {
+	public IOSimulator(List<String> istruzioniIN) {
 		this.istruzioniIN = istruzioniIN;
-		this.msgGioco = new String[MAX_MSG];
+		this.msgGioco = new ArrayList<>(50);
+		this.recordIstruzione = new HashMap<>();
 		
 		this.istruzioniDate = 0;
 		this.daMemorizzare = 0;
 		this.msgCorrente = 0;
+		this.istrCorrente = null;
 	}
 	
 	/**
@@ -26,9 +34,32 @@ public class IOSimulator implements IO {
 	@Override
 	public void mostraMessaggio(String msg) {
 		if(isEmpty()) {
-			this.msgGioco[this.daMemorizzare] = msg;
+			this.msgGioco.add(this.daMemorizzare, msg);
 			this.daMemorizzare++;
+			salvaRecord(msg);
 		}	
+	}
+	
+	/**
+	 * salvaRecord sfrutta la struttura di Map<String,List<String>> che associa ad una stringa,
+	 * che è il comando, una Lista di stringhe che è tutte le risposte del gioco al comando stesso,
+	 * potendo istruzioni essere le stesse in ripetizione
+	 * @param msg
+	 */
+	public void salvaRecord(String msg) {
+		if(this.istrCorrente != null) {
+			if(this.recordIstruzione.keySet().contains(this.istrCorrente))
+				this.recordIstruzione.get(this.istrCorrente).add(msg);
+			else {
+				List<String> istrSucc = new ArrayList<>();
+				istrSucc.add(msg);
+				this.recordIstruzione.put(this.istrCorrente, istrSucc);
+			}	
+		}	
+	}
+	
+	public Map<String,List<String>> getRecordIstruzioni() {
+		return this.recordIstruzione;
 	}
 	
 	/**
@@ -38,7 +69,7 @@ public class IOSimulator implements IO {
 	 */
 	public String getMsgCorrente() {
 		if(isEmpty()) {
-			String corrente = this.msgGioco[this.msgCorrente];
+			String corrente = this.msgGioco.get(this.msgCorrente);
 			this.msgCorrente++;
 			return corrente;
 		}
@@ -70,11 +101,12 @@ public class IOSimulator implements IO {
 	
 	@Override
 	public String leggiRiga() {
-		if(this.istruzioniDate == this.istruzioniIN.length)
+		if(this.istruzioniDate == this.istruzioniIN.size())
 			return "fine";
 		else {
-			String istruzione = this.istruzioniIN[this.istruzioniDate];
+			String istruzione = this.istruzioniIN.get(this.istruzioniDate);
 			this.istruzioniDate++;
+			this.istrCorrente = istruzione;
 			return istruzione;
 		}		
 	}

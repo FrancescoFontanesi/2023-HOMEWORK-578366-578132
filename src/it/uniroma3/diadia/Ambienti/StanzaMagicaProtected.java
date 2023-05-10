@@ -18,7 +18,7 @@ public class StanzaMagicaProtected extends StanzaProtected {
 	
 	@Override
 	public boolean addAttrezzo(Attrezzo attrezzo) {
-		if(super.numeroAttrezzi > NUMERO_MASSIMO_ATTREZZI)
+		if(!super.spazioLibero())
 			return false;
 		else {
 			this.contatoreAttrezziPosati += 1;

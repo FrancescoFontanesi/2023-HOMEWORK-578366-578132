@@ -17,8 +17,8 @@ public class Partita {
 	private boolean finita;
 
 	
-	public Partita() {
-		this.labirinto = new Labirinto();
+	public Partita(Labirinto labirinto) {
+		this.labirinto = labirinto;
 		this.finita = false;
 		this.giocatore = new Giocatore();
 	}
@@ -83,6 +83,13 @@ public class Partita {
 	public void setCfu(int cfu) {
 		this.giocatore.setCfu(cfu);	
 	}	
+	
+	/**
+	 * setLabirinto permette di impostare il labirinto in cui si vuole giocare
+	 */
+	public void setLabirinto(Labirinto labirinto) {
+		this.labirinto = labirinto;
+	}
 	
 	/**
 	 * GetGiocatore

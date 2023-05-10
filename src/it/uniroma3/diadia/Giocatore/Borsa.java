@@ -1,49 +1,35 @@
 package it.uniroma3.diadia.Giocatore;
 import it.uniroma3.diadia.Attrezzo.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.Set;
 
 public class Borsa {
+	
 	public final static int DEFAULT_PESO_MAX_BORSA = 10;
-	public final static int NON_PRESENTE = -1;
-	private Attrezzo[] attrezzi;
-	private int numeroAttrezzi;
+	
+	private Map<String,Attrezzo> attrezzi;
 	private int pesoMax;
 	
 	public Borsa(int pesoMax) {
 		this.pesoMax = pesoMax;
-		this.attrezzi = new Attrezzo[10];
-		this.numeroAttrezzi = 0;
+		this.attrezzi = new HashMap<>();
 	}
 	public Borsa() {
 		this(DEFAULT_PESO_MAX_BORSA);
 	}
 	
 	public boolean addAttrezzo(Attrezzo attrezzo) {
-		if(this.getPeso() + attrezzo.getPeso() > this.getPesoMax())
+		if(this.spazioLibero(attrezzo.getPeso()))
+			this.attrezzi.put(attrezzo.getNome(), attrezzo);
+		else
 			return false;
-		else {
-			if(this.numeroAttrezzi == 10)
-				return false;
-			else {
-				this.attrezzi[this.numeroAttrezzi] = attrezzo;
-				this.numeroAttrezzi++;
-				return true;
-			}
-		}
-	}
-	
-	/**
-	 * Utilizzo un metodo getIndice per evitare ripetizioni di codice nei metodi @see removeAttrezzo
-	 * @see getAttrezzo poichè si basano tutti su quest'operazione di ricerca comune
-	 * @param nomeAttrezzo
-	 * @return indice identificativo dell'oggetto
-	 */
-	public int getIndice(String nomeAttrezzo) {
-		int index = NON_PRESENTE;
-		for(int i = 0; i < this.numeroAttrezzi && index == NON_PRESENTE ; i++) {
-			if(this.attrezzi[i].getNome().equals(nomeAttrezzo))
-				index = i;
-		}
-		return index;
+		return true;
 	}
 	
 	/*
@@ -55,67 +41,107 @@ public class Borsa {
 	 * 
 	 */
 	public Attrezzo getAttrezzo(String nomeAttrezzo) {
-		int index = getIndice(nomeAttrezzo);
-		
-		if(index == NON_PRESENTE)
-			return null;
-		else
-			return this.attrezzi[index];
+		return this.attrezzi.get(nomeAttrezzo);
 	}	
 	
 	public int getPeso() {
-		int peso = 0;
-		for(int i = 0; i < this.numeroAttrezzi; i++) {
-			peso += this.attrezzi[i].getPeso();
+		int pesotot = 0;
+		for(Attrezzo a : this.attrezzi.values()) {
+			pesotot += a.getPeso();
 		}
-		return peso;
+		return pesotot;
 	}
+	
 	public int getPesoMax() {
 		return this.pesoMax;
 	}
 	
+	/**
+	 * Verifico se la capacità massima di peso trasportabile non è ecceduta
+	 * @return boolean value identificativo se è possibile aggiungere nuovi oggetti o meno
+	 */
+	public boolean spazioLibero(int peso) {
+		return this.getPeso() + peso < this.pesoMax;
+	}
+	
 	public boolean isEmpty() {
-		return this.numeroAttrezzi == 0;
+		return this.attrezzi.isEmpty();
 	}
 	public boolean hasAttrezzo(String nomeAttrezzo) {
 		return this.getAttrezzo(nomeAttrezzo) != null;
 	}
 	/**
-	 * La rimozione dall'Array, in questo caso, si basa su un algoritmo che, dopo
-	 * aver ricavato l'indice corrispondente all'elemento da eliminare, sposta tutti
-	 * gli elementi successivi di un posto a sinistra, creando un duplicato in ultima
-	 * posizione che viene posto null per sfruttare il garbage collector
-	 * 
+	 * Rimuove l'attrezzo indicato e lo ritorna
 	 * @param nomeAttrezzo
 	 * @return Attrezzo rimosso (Da mettere nella stanza)
 	 */
 	public Attrezzo removeAttrezzo(String nomeAttrezzo) {
-		if(!this.hasAttrezzo(nomeAttrezzo))
+		if(this.hasAttrezzo(nomeAttrezzo))
+			return this.attrezzi.remove(nomeAttrezzo);
+		else
 			return null;
-		else {
-			int index = getIndice(nomeAttrezzo);
-			Attrezzo rimosso = this.attrezzi[index];
-			
-			for(int j = index; j < this.numeroAttrezzi - 1; j++) {
-				this.attrezzi[j] = this.attrezzi[j + 1];
-			}
-			this.attrezzi[this.numeroAttrezzi - 1] = null;
-			this.numeroAttrezzi--;
-			return rimosso;
-		}
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		if(!this.isEmpty()) {
+		if(this.isEmpty())
+			s.append("Borsa Vuota");
+		else {
 			s.append("Contenuto Borsa(" + this.getPeso() + "kg/" + this.getPesoMax()
 			 + "kg):");
-			for(int i = 0; i < this.numeroAttrezzi; i++) {
-				s.append(attrezzi[i].toString());
+			List<Attrezzo> ord = this.getContenutoOrdinatoPerPeso();
+			for(Attrezzo a : ord) {
+				s.append(a.toString() + " ");
 			}
-		} else
-			s.append("Borsa Vuota");
+		}
 		return s.toString();
+	}
+	/**
+	 * Metodo di ordinamento di attrezzi per peso e, a parità di peso, per nome
+	 * @return Lista di attrezzi ordinata per peso
+	 */
+	public List<Attrezzo> getContenutoOrdinatoPerPeso(){
+		List<Attrezzo> ordinata = new ArrayList<>();
+		ordinata.addAll(this.attrezzi.values());
+		Collections.sort(ordinata, new ComparatorePesoNome());
+		return ordinata;
+	}
+	
+	/**
+	 * Metodo di ordinamento di attrezzi per peso e, a parità di peso, per nome
+	 * @return SortedSet di attrezzi ordinata per peso
+	 */
+	public SortedSet<Attrezzo> getSortedSetOrdinatoPerPeso(){
+		SortedSet<Attrezzo> ord = new TreeSet<>(new ComparatorePesoNome());
+		ord.addAll(this.attrezzi.values());
+		return ord;
+	}
+	
+	/**
+	 * Metodo di ordinamento di attrezzi per nome
+	 * @return SortedSet di attrezzi ordinati per nome
+	 */
+	public SortedSet<Attrezzo> getContenutoOrdinatoPerNome(){
+		return new TreeSet<Attrezzo>(this.attrezzi.values());
+	}
+	
+	public Map<Integer,Set<Attrezzo>> getContenutoRaggruppatoPerPeso(){
+		Map<Integer,Set<Attrezzo>> mappa = new HashMap<>();
+		boolean trovato = false;
+		for(Attrezzo a : this.attrezzi.values()) {
+			trovato = false;
+			for(int p : mappa.keySet()) {
+				if(a.getPeso() == p) {
+					mappa.get(p).add(a);
+					trovato = true;
+				}
+			}
+			if(!trovato) {
+				mappa.put(a.getPeso(),new TreeSet<Attrezzo>());
+				mappa.get(a.getPeso()).add(a);
+			}
+		}
+		return mappa;
 	}
 }

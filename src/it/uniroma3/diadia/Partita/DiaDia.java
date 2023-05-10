@@ -1,5 +1,6 @@
 package it.uniroma3.diadia.Partita;
 import it.uniroma3.diadia.Comandi.*;
+import it.uniroma3.diadia.Ambienti.*;
 
 /**
  * Classe principale di diadia, un semplice gioco di ruolo ambientato al dia.
@@ -29,8 +30,8 @@ public class DiaDia {
 	
 	private IO console;
 
-	public DiaDia(IO console) {
-		this.partita = new Partita();
+	public DiaDia(IO console,Labirinto labirinto) {
+		this.partita = new Partita(labirinto);
 		this.console = console;
 	}
 
@@ -64,7 +65,12 @@ public class DiaDia {
 
 	public static void main(String[] argc) {
 		IO console = new IOConsole();
-		DiaDia gioco = new DiaDia(console);
+		Labirinto labirinto = new LabirintoBuilder()
+				.addStanzaIniziale("LabCampusOne")
+				.addStanzaVincente("Biblioteca")
+				.addAdiacenza("LabCampusOne", "Biblioteca", "ovest")
+				.getLabirinto();
+		DiaDia gioco = new DiaDia(console,labirinto);
 		gioco.gioca();
 	}
 }

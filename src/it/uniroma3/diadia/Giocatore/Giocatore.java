@@ -39,5 +39,9 @@ public class Giocatore {
 	public boolean hasAttrezzo(String nomeAttrezzo) {
 		return this.borsa.hasAttrezzo(nomeAttrezzo);
 	}
+	
+	public Borsa getBorsa() {
+		return this.borsa;
+	}
 
 }

@@ -17,11 +17,11 @@ public class StanzaMagica extends Stanza {
 	
 	@Override
 	public boolean addAttrezzo(Attrezzo attrezzo) {
-		if(!super.isEmpty())
+		if(!super.spazioLibero())
 			return false;
 		else {
 			this.contatoreAttrezziPosati += 1;
-			if(this.contatoreAttrezziPosati < this.sogliaMagica)
+			if(this.contatoreAttrezziPosati <= this.sogliaMagica)
 				return super.addAttrezzo(attrezzo);
 			else
 				return super.addAttrezzo(modificaAttrezzo(attrezzo));
@@ -34,5 +34,11 @@ public class StanzaMagica extends Stanza {
 		invertito = invertito.reverse();
 		return new Attrezzo(invertito.toString(),attrezzo.getPeso()*2);
 	}
-
+	
+	public boolean isMagica() {
+		if(this instanceof StanzaMagica)
+			return true;
+		else
+			return false;
+	}
 }

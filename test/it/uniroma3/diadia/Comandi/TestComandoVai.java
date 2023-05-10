@@ -8,32 +8,39 @@ import org.junit.jupiter.api.Test;
 
 import it.uniroma3.diadia.Ambienti.Stanza;
 import it.uniroma3.diadia.Partita.Partita;
+import it.uniroma3.diadia.Ambienti.*;
 
 public class TestComandoVai {
-	private Stanza start;
+	private Labirinto labirinto;
 	private Partita partita;
 	private ComandoVai vai;
 
 	@BeforeEach
 	public void setUp() throws Exception {
 		vai = new ComandoVai();
-		partita = new Partita();
+		labirinto = new LabirintoBuilder()
+				.addStanzaIniziale("start")
+				.addStanza("StNord")
+				.addStanza("StSud")
+				.addStanza("StEst")
+				.addStanza("StOvest")
+				.addAdiacenza("start", "StNord", "nord")
+				.addAdiacenza("start", "StSud", "sud")
+				.addAdiacenza("start", "StEst", "est")
+				.addAdiacenza("start", "StOvest", "ovest")
+				.getLabirinto();
+		partita = new Partita(this.labirinto);
 	}
 
 	@AfterEach
 	public void tearDown() throws Exception {
+		this.labirinto= null;
+		this.partita = null;
 	}
-
-	@Test
-	public void test() {
-		start = null;
-		partita = null;
-	}
-	
 
 	@Test
 	public void testNull() {
-		start = partita.getStanzaCorrente();
+		Stanza start = partita.getStanzaCorrente();
 		vai.setParametro(null);
 		vai.esegui(partita);
 		assertEquals(start, partita.getStanzaCorrente());
@@ -41,23 +48,23 @@ public class TestComandoVai {
 	
 	@Test
 	public void testNord() {
-		start = partita.getStanzaCorrente().getStanzaAdiacente("nord");
+		Stanza StNord = partita.getStanzaCorrente().getStanzaAdiacente("nord");
 		vai.setParametro("nord");
 		vai.esegui(partita);
-		assertEquals(start, partita.getStanzaCorrente());
+		assertEquals(StNord, partita.getStanzaCorrente());
 	}
 	
 	@Test
 	public void testSud() {
-		start = partita.getStanzaCorrente().getStanzaAdiacente("sud");
+		Stanza StSud = partita.getStanzaCorrente().getStanzaAdiacente("sud");
 		vai.setParametro("sud");
 		vai.esegui(partita);
-		assertEquals(start, partita.getStanzaCorrente());
+		assertEquals(StSud, partita.getStanzaCorrente());
 	}
 	
 	@Test
 	public void testFalse1() {
-		start = partita.getStanzaCorrente();
+		Stanza start = partita.getStanzaCorrente();
 		vai.setParametro("est");
 		vai.esegui(partita);
 		assertNotEquals(start, partita.getStanzaCorrente());
@@ -65,7 +72,7 @@ public class TestComandoVai {
 	
 	@Test
 	public void testFalse2() {
-		start = partita.getStanzaCorrente();
+		Stanza start = partita.getStanzaCorrente();
 		vai.setParametro("ovest");
 		vai.esegui(partita);
 		assertNotEquals(start, partita.getStanzaCorrente());

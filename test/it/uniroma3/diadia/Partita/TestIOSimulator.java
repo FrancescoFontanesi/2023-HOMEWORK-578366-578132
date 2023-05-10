@@ -1,35 +1,71 @@
 package it.uniroma3.diadia.Partita;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import it.uniroma3.diadia.Ambienti.Labirinto;
-import it.uniroma3.diadia.Ambienti.Stanza;
 import it.uniroma3.diadia.Comandi.ComandoFine;
+import it.uniroma3.diadia.Ambienti.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
 
-class TestIOSimulator {
+public class TestIOSimulator {
 	private DiaDia gioco;
 	private IOSimulator simulatore;
+	private Labirinto labirinto;
 
+	@BeforeEach
+	public void setUp() {
+		this.labirinto = new LabirintoBuilder()
+				.addStanzaIniziale("Atrio")
+				.addAttrezzo("osso", 1)
+				.addStanzaVincente("Biblioteca")
+				.addStanza("Aula N10")
+				.addAttrezzo("lanterna", 3)
+				.addStanza("Aula N11")
+				.addStanza("Laboratorio Campus")
+				.addAdiacenza("Atrio", "Biblioteca", "nord")
+				.addAdiacenza("Atrio", "Aula N11", "est")
+				.addAdiacenza("Atrio", "Aula N10", "sud")
+				.addAdiacenza("Atrio", "Laboratorio Campus", "ovest")
+				.addAdiacenza("Aula N11", "Laboratorio Campus", "est")
+				.addAdiacenza("Aula N11", "Atrio", "ovest")
+				.addAdiacenza("Aula N10", "Atrio", "nord")
+				.addAdiacenza("Aula N10", "Aula N11", "est")
+				.addAdiacenza("Aula N10", "Laboratorio Campus", "ovest")
+				.addAdiacenza("Laboratorio Campus", "Atrio", "est")
+				.addAdiacenza("Laboratorio Campus", "Aula N11", "ovest")
+				.addAdiacenza("Biblioteca", "Atrio", "sud")
+				.getLabirinto();
+	}
+	
 	@AfterEach
-	void tearDown() throws Exception {
+	public void tearDown() throws Exception {
 		this.gioco = null;
 		this.simulatore = null;
+		this.labirinto = null;
 	}
+	
 
 	@Test
 	public void testFine() {
-		this.simulatore = new IOSimulator(new String[]{"fine"});
-		this.gioco = new DiaDia(this.simulatore);
+		List<String> istruzioni = new ArrayList<>();
+		istruzioni.add("fine");
+		this.simulatore = new IOSimulator(istruzioni);
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
 		this.gioco.gioca();
 		assertEquals(this.simulatore.getMsgCorrente(), DiaDia.MESSAGGIO_BENVENUTO);
 		assertEquals(this.simulatore.getMsgCorrente(), ComandoFine.MSG_FINE);
 	}
 	@Test
 	public void testSconosciuto() {
-		this.simulatore = new IOSimulator(new String[] {"ABCDE"});
-		this.gioco = new DiaDia(this.simulatore);
+		List<String> istruzioni = new ArrayList<>();
+		istruzioni.add("ABCDE");
+		this.simulatore = new IOSimulator(istruzioni);
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
 		this.gioco.gioca();
 		
 		this.simulatore.skipMsgCorrente();
@@ -39,8 +75,8 @@ class TestIOSimulator {
 	
 	@Test
 	public void testNull() {
-		this.simulatore = new IOSimulator(new String[] {});
-		this.gioco = new DiaDia(this.simulatore);
+		this.simulatore = new IOSimulator(new ArrayList<String>());
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
 		this.gioco.gioca();
 		
 		this.simulatore.skipMsgCorrente();
@@ -49,8 +85,9 @@ class TestIOSimulator {
 	
 	@Test
 	public void testPrendi() {
-		this.simulatore = new IOSimulator(new String[] {"prendi lanterna","prendi osso"});
-		this.gioco = new DiaDia(this.simulatore);
+		
+		this.simulatore = new IOSimulator(new ArrayList<String>(Arrays.asList("prendi lanterna","prendi osso")));
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
 		this.gioco.gioca();
 		
 		this.simulatore.skipMsgCorrente();
@@ -60,20 +97,21 @@ class TestIOSimulator {
 	
 	@Test
 	public void testVai() {
-		this.simulatore = new IOSimulator(new String[] {"vai est"});
-		this.gioco = new DiaDia(this.simulatore);
+		List<String> istruzioni = new ArrayList<>();
+		istruzioni.add("vai est");
+		Stanza iniziale = this.labirinto.getStanzaCorrente();
+		this.simulatore = new IOSimulator(istruzioni);
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
 		this.gioco.gioca();
 	
 		this.simulatore.skipMsgCorrente();
-		Labirinto labirinto = new Labirinto();
-		Stanza corrente = labirinto.getStanzaCorrente().getStanzaAdiacente("est");
-		assertEquals(this.simulatore.getMsgCorrente(), corrente.getDescrizione());
+		assertEquals(this.simulatore.getMsgCorrente(), iniziale.getStanzaAdiacente("est").getDescrizione());
 	}
 	
 	@Test
 	public void testPosa() {
-		this.simulatore = new IOSimulator(new String[] {"posa osso","prendi osso", "posa osso"});
-		this.gioco = new DiaDia(this.simulatore);
+		this.simulatore = new IOSimulator(new ArrayList<String>(Arrays.asList("posa osso","prendi osso","posa osso")));
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
 		this.gioco.gioca();
 		
 		this.simulatore.skipMsgCorrente();
@@ -84,19 +122,22 @@ class TestIOSimulator {
 	
 	@Test
 	public void testGuarda() {
-		this.simulatore = new IOSimulator(new String[] {"guarda"});
-		this.gioco = new DiaDia(this.simulatore);
+		List<String> istruzioni = new ArrayList<>();
+		istruzioni.add("guarda");
+		this.simulatore = new IOSimulator(istruzioni);
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
 		this.gioco.gioca();
-		
-		Labirinto prova = new Labirinto();
+	
 		this.simulatore.skipMsgCorrente();
-		assertEquals(this.simulatore.getMsgCorrente(), prova.getStanzaCorrente().getDescrizione() + "\nCfu residui: " + 20);
+		assertEquals(this.simulatore.getMsgCorrente(),this.labirinto.getStanzaCorrente().getDescrizione() + "\nCfu residui: 20\n" + "Borsa Vuota");
 	}
 	
 	@Test
 	public void testVinta() {
-		this.simulatore = new IOSimulator(new String[] {"vai nord"});
-		this.gioco = new DiaDia(this.simulatore);
+		List<String> istruzioni = new ArrayList<>();
+		istruzioni.add("vai nord");
+		this.simulatore = new IOSimulator(istruzioni);
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
 		this.gioco.gioca();
 		
 		this.simulatore.skipMsgCorrente();
@@ -106,16 +147,37 @@ class TestIOSimulator {
 	
 	@Test
 	public void testCompleta() {
-		this.simulatore = new IOSimulator(new String[] {"vai sud", "prendi lanterna", "vai nord", "vai nord"});
-		this.gioco = new DiaDia(this.simulatore);
+		this.simulatore = new IOSimulator(new ArrayList<String>(Arrays.asList("vai sud","prendi lanterna","vai nord","vai nord")));
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
+		Stanza iniziale = this.labirinto.getStanzaCorrente();
+		String descrAulaN10 = iniziale.getStanzaAdiacente("sud").getDescrizione();
 		this.gioco.gioca();
-		Labirinto labirinto = new Labirinto();
 		
 		assertEquals(this.simulatore.getMsgCorrente(), DiaDia.MESSAGGIO_BENVENUTO);
-		assertEquals(this.simulatore.getMsgCorrente(), labirinto.getStanzaCorrente().getStanzaAdiacente("sud").getDescrizione());
+		assertEquals(this.simulatore.getMsgCorrente(), descrAulaN10);
 		assertEquals(this.simulatore.getMsgCorrente(), "lanterna aggiunto in Borsa");
-		assertEquals(this.simulatore.getMsgCorrente(), labirinto.getStanzaCorrente().getDescrizione());
-		assertEquals(this.simulatore.getMsgCorrente(), labirinto.getStanzaVincente().getDescrizione());
+		assertEquals(this.simulatore.getMsgCorrente(), iniziale.getDescrizione());
+		assertEquals(this.simulatore.getMsgCorrente(), iniziale.getStanzaAdiacente("nord").getDescrizione());
 		assertEquals(this.simulatore.getMsgCorrente(), "Hai vinto!");
+	}
+	
+	@Test
+	public void testGetRecordIstruzioni() {
+		this.simulatore = new IOSimulator(new ArrayList<String>(Arrays.asList("vai sud","vai nord","vai nord")));
+		this.gioco = new DiaDia(this.simulatore,this.labirinto);
+		Stanza iniziale = this.labirinto.getStanzaCorrente();
+		this.gioco.gioca();
+		
+		assertEquals(this.simulatore.getMsgCorrente(),DiaDia.MESSAGGIO_BENVENUTO);
+		assertEquals(this.simulatore.getMsgCorrente(),iniziale.getStanzaAdiacente("sud").getDescrizione());
+		assertEquals(this.simulatore.getMsgCorrente(),iniziale.getDescrizione());
+		assertEquals(this.simulatore.getMsgCorrente(),this.labirinto.getStanzaVincente().getDescrizione());
+		assertEquals(this.simulatore.getMsgCorrente(),"Hai vinto!");
+		assertTrue(this.simulatore.getRecordIstruzioni().containsKey("vai sud"));
+		assertTrue(this.simulatore.getRecordIstruzioni().containsKey("vai nord"));
+		assertEquals(iniziale.getStanzaAdiacente("sud").getDescrizione(),this.simulatore.getRecordIstruzioni().get("vai sud").get(0));
+		assertEquals(iniziale.getDescrizione(),this.simulatore.getRecordIstruzioni().get("vai nord").get(0));
+		assertEquals(this.labirinto.getStanzaVincente().getDescrizione(),this.simulatore.getRecordIstruzioni().get("vai nord").get(1));
+		assertEquals("Hai vinto!",this.simulatore.getRecordIstruzioni().get("vai nord").get(2));
 	}
 }

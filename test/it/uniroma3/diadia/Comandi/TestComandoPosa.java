@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import it.uniroma3.diadia.Ambienti.Stanza;
 import it.uniroma3.diadia.Attrezzo.Attrezzo;
 import it.uniroma3.diadia.Partita.Partita;
+import it.uniroma3.diadia.Ambienti.*;
 
 class TestComandoPosa {
 	private Partita partita;
@@ -17,7 +18,7 @@ class TestComandoPosa {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		this.partita = new Partita();
+		this.partita = new Partita(new Labirinto());
 		this.stanza = new Stanza("prova");
 		this.comando = new ComandoPosa();
 
