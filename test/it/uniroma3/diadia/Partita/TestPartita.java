@@ -12,7 +12,8 @@ public class TestPartita {
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		this.partita = new Partita(new Labirinto());
+		Labirinto lab = new Labirinto.LabirintoBuilder().getLabirinto();
+		this.partita = new Partita(lab);
 	}
 
 	@AfterEach

@@ -3,20 +3,22 @@ import it.uniroma3.diadia.Ambienti.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import it.uniroma3.diadia.Partita.*;
 
 public class TestComandoVaiAmpliato {
-	LabirintoBuilder builder;
+	Labirinto.LabirintoBuilder builder;
 	Partita partita;
 	ComandoVai vai;
 	
 	@BeforeEach
 	public void setUp() throws Exception {
-		this.builder = new LabirintoBuilder();
-		this.vai = new ComandoVai();
+		this.builder = new Labirinto.LabirintoBuilder();
+		this.vai = new ComandoVai(new IOConsole(new Scanner(System.in)));
 	}
 
 	@AfterEach

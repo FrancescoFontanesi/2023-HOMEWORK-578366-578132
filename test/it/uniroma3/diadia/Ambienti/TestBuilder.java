@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 import it.uniroma3.diadia.Attrezzo.*;
 
 public class TestBuilder {
-	private LabirintoBuilder builder;
+	private Labirinto.LabirintoBuilder builder;
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		this.builder = new LabirintoBuilder();
+		this.builder = new Labirinto.LabirintoBuilder();
 	}
 
 	@AfterEach

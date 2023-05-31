@@ -1,12 +1,17 @@
+
 package it.uniroma3.diadia.Ambienti;
 import it.uniroma3.diadia.Attrezzo.*;
+import it.uniroma3.diadia.Partita.DiaDia;
+import it.uniroma3.diadia.Personaggi.AbstractPersonaggio;
 
 import java.util.Set;
 import java.util.Map;
+import java.util.Random;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 
 /**
  * Classe Stanza - una stanza in un gioco di ruolo.
@@ -21,12 +26,15 @@ import java.util.Arrays;
 
 public class Stanza {
 
-	final static private int NUMERO_MASSIMO_ATTREZZI = 10;
-
+	final static private int NUMERO_MASSIMO_ATTREZZI = Integer.parseInt(
+			DiaDia.prop.getProperty("Numero_Massimo_Attrezzi", "10"));
+	
 	private String nome;
 	private Map<String,Attrezzo> attrezzi;
-	private Map<String,Stanza> stanzeAdiacenti;
-	private List<String> direzioni;
+	private static List<String> interazioni = new ArrayList<>(Arrays.asList(",si trova nell'angolo a fissare il muro",
+			",si trova al centro e sta guardando il soffitto",",sta fischiettando e ti osserva",",sembra volere qualcosa da te"));
+	private EnumMap<Direzione,Stanza> stanzeAdiacenti;
+	private AbstractPersonaggio personaggio;
 
 	/**
 	 * Crea una stanza. Non ci sono stanze adiacenti, non ci sono attrezzi.
@@ -35,8 +43,7 @@ public class Stanza {
 	public Stanza(String nome) {
 		this.nome = nome;
 		this.attrezzi = new HashMap<>(10);
-		this.stanzeAdiacenti = new HashMap<>(4);
-		this.direzioni = new ArrayList<>(Arrays.asList("nord","sud","est","ovest"));
+		this.stanzeAdiacenti = new EnumMap<Direzione,Stanza>(Direzione.class);
 	}
 
 	/**
@@ -44,11 +51,14 @@ public class Stanza {
 	 * @param direzione direzione in cui sara' posta la stanza adiacente.
 	 * @param stanza stanza adiacente nella direzione indicata dal primo parametro.
 	 */
-	public boolean impostaStanzaAdiacente(String direzione, Stanza stanza) {
-		if(this.direzioni.contains(direzione))
-			this.stanzeAdiacenti.put(direzione, stanza);
-		else
+	public boolean impostaStanzaAdiacente(String direzione, Stanza stanza) 
+			throws IllegalArgumentException {
+		try {
+			Direzione dir = Direzione.valueOf(direzione);
+			this.stanzeAdiacenti.put(dir, stanza);
+		} catch(IllegalArgumentException e) {
 			return false;
+		}
 		return true;
 	}
 
@@ -57,7 +67,11 @@ public class Stanza {
 	 * @param direzione
 	 */
 	public Stanza getStanzaAdiacente(String direzione) {
-		return this.stanzeAdiacenti.get(direzione);
+		try {
+			return this.stanzeAdiacenti.get(Direzione.valueOf(direzione));			
+		} catch(IllegalArgumentException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -106,13 +120,18 @@ public class Stanza {
 		StringBuilder s = new StringBuilder();
 		s.append(this.nome);
 		s.append("\nUscite:\n");
-		Set<String> direzioni = this.stanzeAdiacenti.keySet();
-		for(String dir : direzioni) {
-			s.append(dir + " ");
+		Set<Direzione> direzioni = getDirezioni();
+		for(Direzione dir : direzioni) {
+			s.append(dir.name()+ " ");
 		}
 		s.append("\nAttrezzi nella Stanza:");
 		for(Attrezzo attr : this.attrezzi.values()) {
 			s.append(attr.toString());
+		}
+		if(this.hasPersonaggio()) {
+			Random rnd = new Random();
+			s.append("\nC'è " + this.personaggio.desc4Stanza() + "nella Stanza" 
+						+ interazioni.get(rnd.nextInt(3)));
 		}
 		return s.toString();
 	}
@@ -148,13 +167,10 @@ public class Stanza {
 		return this.attrezzi.remove(attrezzo.getNome(), attrezzo);			
 	}
 
-	public Set<String> getDirezioni() {
+	public Set<Direzione> getDirezioni() {
 		return this.stanzeAdiacenti.keySet();
 	}
 
-	public boolean isEmpty() {
-		return this.attrezzi.isEmpty();
-	}
 
 	/**
 	 * Verifico se il numero di attrezzi all'interno della stanza non ecceda la
@@ -170,7 +186,7 @@ public class Stanza {
 	 * Ritorna la mappatura delle stanze adiacenti alla stanza in analisi
 	 * @return mappa delle stanze adiacenti
 	 */
-	public Map<String,Stanza> getMapStanzeAdiacenti(){
+	public EnumMap<Direzione,Stanza> getMapStanzeAdiacenti(){
 		return this.stanzeAdiacenti;
 	}
 	/**
@@ -184,4 +200,16 @@ public class Stanza {
 		Stanza s = (Stanza) o;
 		return this.getNome().equals(s.getNome());
 	}
+	public void setPersonaggio(AbstractPersonaggio personaggio) {
+		this.personaggio = personaggio;
+	}
+
+	public AbstractPersonaggio getPersonaggio() {
+		return this.personaggio;
+	}
+	
+	public boolean hasPersonaggio() {
+		return this.personaggio != null;
+	}
+
 }

@@ -2,42 +2,25 @@ package it.uniroma3.diadia.Comandi;
 import it.uniroma3.diadia.Attrezzo.Attrezzo;
 import it.uniroma3.diadia.Partita.*;
 
-public class ComandoPosa implements Comando {
-	private String nomeAttrezzo;
+public class ComandoPosa extends AbstractComando {
 	private final static String NOME_CMD = "Comando Posa";
-	private IO console;
 	
-	public ComandoPosa() {
-		this.console = new IOConsole();
+	public ComandoPosa(IO console) {
+		super(console);
 	}
 	@Override
 	public void esegui(Partita partita) {
-		if(!partita.getGiocatore().hasAttrezzo(this.nomeAttrezzo))
-			this.console.mostraMessaggio("" + this.nomeAttrezzo + " non presente in Borsa");
+		if(!partita.getGiocatore().hasAttrezzo(super.getParametro()))
+			super.getConsole().mostraMessaggio("" + super.getParametro() + " non presente in Borsa");
 		else {
-			if(!partita.getStanzaCorrente().isEmpty())
-				this.console.mostraMessaggio("Impossibile posare oggetto: stanza piena!");
+			if(!partita.getStanzaCorrente().spazioLibero())
+				super.getConsole().mostraMessaggio("Impossibile posare oggetto: stanza piena!");
 			else {
-				Attrezzo daPosare = partita.getGiocatore().posaAttrezzo(this.nomeAttrezzo);
+				Attrezzo daPosare = partita.getGiocatore().posaAttrezzo(super.getParametro());
 				if(partita.getStanzaCorrente().addAttrezzo(daPosare))
-					this.console.mostraMessaggio("" + this.nomeAttrezzo + " posato");	
+					super.getConsole().mostraMessaggio("" + super.getParametro() + " posato");	
 			}
 		}
-	}
-	
-	@Override
-	public void setParametro(String parametro) {
-		this.nomeAttrezzo = parametro;
-	}
-	
-	@Override
-	public String getParametro() {
-		return this.nomeAttrezzo;
-	}
-	
-	@Override
-	public void setIO(IO console) {
-		this.console = console;
 	}
 	
 	@Override

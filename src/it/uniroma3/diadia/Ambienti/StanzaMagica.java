@@ -1,8 +1,10 @@
 package it.uniroma3.diadia.Ambienti;
 import it.uniroma3.diadia.Attrezzo.*;
+import it.uniroma3.diadia.Partita.DiaDia;
 
 public class StanzaMagica extends Stanza {
-	final static private int SOGLIA_MAGICA_DEFAULT = 3;
+	final static private int SOGLIA_MAGICA_DEFAULT = Integer.parseInt(DiaDia.prop.
+			getProperty("Soglia_Magica_Default", "3"));
 	private int contatoreAttrezziPosati;
 	private int sogliaMagica;
 	

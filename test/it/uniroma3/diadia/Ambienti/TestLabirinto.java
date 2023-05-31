@@ -11,7 +11,7 @@ public class TestLabirinto {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
-		this.labirinto = new LabirintoBuilder()
+		this.labirinto = new Labirinto.LabirintoBuilder()
 				.addStanzaIniziale("Atrio")
 				.addStanzaVincente("Biblioteca")
 				.addStanza("Aula N10")

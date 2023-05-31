@@ -1,5 +1,4 @@
 package it.uniroma3.diadia.Attrezzo;
-import java.util.*;
 
 /**
  * Una semplice classe che modella un attrezzo.

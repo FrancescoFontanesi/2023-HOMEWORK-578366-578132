@@ -1,17 +1,20 @@
 package it.uniroma3.diadia.Giocatore;
 import it.uniroma3.diadia.Attrezzo.*;
+import it.uniroma3.diadia.Partita.DiaDia;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Set;
 
 public class Borsa {
 	
-	public final static int DEFAULT_PESO_MAX_BORSA = 10;
+	public final static int DEFAULT_PESO_MAX_BORSA = Integer.parseInt(DiaDia.prop.
+			getProperty("Peso_Max_Borsa", "10"));
 	
 	private Map<String,Attrezzo> attrezzi;
 	private int pesoMax;
@@ -97,6 +100,17 @@ public class Borsa {
 		}
 		return s.toString();
 	}
+	
+	Comparator<Attrezzo> cmp = new Comparator<Attrezzo>() {
+		@Override
+		public int compare(Attrezzo a1, Attrezzo a2) {
+			int cmp = a1.getPeso() - a2.getPeso();
+			if(cmp == 0)
+				return a1.getNome().compareTo(a2.getNome());
+			return cmp;
+		}
+	};
+	
 	/**
 	 * Metodo di ordinamento di attrezzi per peso e, a parità di peso, per nome
 	 * @return Lista di attrezzi ordinata per peso
@@ -104,7 +118,7 @@ public class Borsa {
 	public List<Attrezzo> getContenutoOrdinatoPerPeso(){
 		List<Attrezzo> ordinata = new ArrayList<>();
 		ordinata.addAll(this.attrezzi.values());
-		Collections.sort(ordinata, new ComparatorePesoNome());
+		Collections.sort(ordinata, cmp);
 		return ordinata;
 	}
 	
@@ -113,7 +127,7 @@ public class Borsa {
 	 * @return SortedSet di attrezzi ordinata per peso
 	 */
 	public SortedSet<Attrezzo> getSortedSetOrdinatoPerPeso(){
-		SortedSet<Attrezzo> ord = new TreeSet<>(new ComparatorePesoNome());
+		SortedSet<Attrezzo> ord = new TreeSet<>(cmp);
 		ord.addAll(this.attrezzi.values());
 		return ord;
 	}
@@ -125,23 +139,19 @@ public class Borsa {
 	public SortedSet<Attrezzo> getContenutoOrdinatoPerNome(){
 		return new TreeSet<Attrezzo>(this.attrezzi.values());
 	}
-	
+
 	public Map<Integer,Set<Attrezzo>> getContenutoRaggruppatoPerPeso(){
-		Map<Integer,Set<Attrezzo>> mappa = new HashMap<>();
-		boolean trovato = false;
+		Map<Integer,Set<Attrezzo>> perPeso = new HashMap<>();
 		for(Attrezzo a : this.attrezzi.values()) {
-			trovato = false;
-			for(int p : mappa.keySet()) {
-				if(a.getPeso() == p) {
-					mappa.get(p).add(a);
-					trovato = true;
-				}
-			}
-			if(!trovato) {
-				mappa.put(a.getPeso(),new TreeSet<Attrezzo>());
-				mappa.get(a.getPeso()).add(a);
+			Integer peso = a.getPeso();
+			if(perPeso.keySet().contains(peso)) {
+				perPeso.get(peso).add(a);
+			} else {
+				Set<Attrezzo> s = new TreeSet<>();
+				s.add(a);
+				perPeso.put(peso, s);
 			}
 		}
-		return mappa;
+		return perPeso;
 	}
 }

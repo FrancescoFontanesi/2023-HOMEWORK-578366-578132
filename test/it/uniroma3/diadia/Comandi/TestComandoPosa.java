@@ -2,12 +2,16 @@ package it.uniroma3.diadia.Comandi;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import it.uniroma3.diadia.Ambienti.Stanza;
 import it.uniroma3.diadia.Attrezzo.Attrezzo;
+import it.uniroma3.diadia.Partita.IOConsole;
 import it.uniroma3.diadia.Partita.Partita;
 import it.uniroma3.diadia.Ambienti.*;
 
@@ -18,9 +22,10 @@ class TestComandoPosa {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		this.partita = new Partita(new Labirinto());
+		Labirinto lab = new Labirinto.LabirintoBuilder().addStanzaIniziale("prova").getLabirinto();
+		this.partita = new Partita(lab);
 		this.stanza = new Stanza("prova");
-		this.comando = new ComandoPosa();
+		this.comando = new ComandoPosa(new IOConsole(new Scanner(System.in)));
 
 		this.partita.getGiocatore().prendiAttrezzo(new Attrezzo("prova1",1));
 		this.partita.getGiocatore().prendiAttrezzo(new Attrezzo("prova2",2));
@@ -38,7 +43,7 @@ class TestComandoPosa {
 	@Test
 	public void testTrue1() {
 		for(int i = 0; i < 10; i++) {
-			this.stanza.addAttrezzo(new Attrezzo("filler",1));
+			this.stanza.addAttrezzo(new Attrezzo("filler" + i,1));
 		}
 		this.comando.setParametro("prova2");
 		this.comando.esegui(partita);

@@ -1,5 +1,6 @@
 package it.uniroma3.diadia.Giocatore;
 import it.uniroma3.diadia.Attrezzo.*;
+import it.uniroma3.diadia.Partita.DiaDia;
 
 /**
  * 
@@ -13,7 +14,7 @@ import it.uniroma3.diadia.Attrezzo.*;
 
 public class Giocatore {
 	private Borsa borsa;
-	private final static int CFU_INIZIALI = 20;
+	private final static int CFU_INIZIALI = Integer.parseInt(DiaDia.prop.getProperty("CFU_Iniziali","20"));
 	private int cfu;
 	
 	public Giocatore() {

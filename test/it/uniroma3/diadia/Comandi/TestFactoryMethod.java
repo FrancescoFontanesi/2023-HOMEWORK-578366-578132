@@ -3,18 +3,21 @@ import it.uniroma3.diadia.Partita.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class TestFactoryMethod {
-	private FabbricaDiComandiFisarmonica factory;
+	private FabbricaDiComandiRiflessiva factory;
 	private IO console;
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		this.factory = new FabbricaDiComandiFisarmonica();
-		this.console = new IOConsole();
+		this.factory = new FabbricaDiComandiRiflessiva();
+		this.console = new IOConsole(new Scanner(System.in));
 	}
 
 	@AfterEach
@@ -24,50 +27,73 @@ class TestFactoryMethod {
 	}
 
 	@Test
-	void testVai() {
-		Comando comando = this.factory.costruisciComando("vai nord", this.console);
+	void testVai() throws IllegalAccessException, NoSuchMethodException, 
+		ClassNotFoundException, InstantiationException, 
+		InvocationTargetException, SecurityException {
+		AbstractComando comando = this.factory.costruisciComando("vai nord", this.console);
 		assertEquals(comando.getNome(),"Comando Vai");
 		assertEquals(comando.getParametro(), "nord");
 	}
 	
 	@Test
-	void testPrendi() {
-		Comando comando = this.factory.costruisciComando("prendi fill", this.console);
+	void testPrendi() throws IllegalAccessException, NoSuchMethodException, 
+	ClassNotFoundException, InstantiationException, 
+	InvocationTargetException, SecurityException {
+		AbstractComando comando = this.factory.costruisciComando("prendi fill", this.console);
 		assertEquals(comando.getNome(),"Comando Prendi");
 		assertEquals(comando.getParametro(), "fill");
 	}
 	
 	@Test
-	void testPosa() {
-		Comando comando = this.factory.costruisciComando("posa fill", this.console);
+	void testPosa() throws IllegalAccessException, NoSuchMethodException, 
+	ClassNotFoundException, InstantiationException, 
+	InvocationTargetException, SecurityException {
+		AbstractComando comando = this.factory.costruisciComando("posa fill", this.console);
 		assertEquals(comando.getNome(),"Comando Posa");
 		assertEquals(comando.getParametro(), "fill");
 	}
 	
 	@Test
-	void testFine() {
-		Comando comando = this.factory.costruisciComando("fine", this.console);
+	void testFine() throws IllegalAccessException, NoSuchMethodException, 
+	ClassNotFoundException, InstantiationException, 
+	InvocationTargetException, SecurityException {
+		AbstractComando comando = this.factory.costruisciComando("fine", this.console);
 		assertEquals(comando.getNome(),"Comando Fine");
 		assertNull(comando.getParametro());
 	}
 	
 	@Test
-	void testGuarda() {
-		Comando comando = this.factory.costruisciComando("guarda", this.console);
+	void testGuarda() throws IllegalAccessException, NoSuchMethodException, 
+	ClassNotFoundException, InstantiationException, 
+	InvocationTargetException, SecurityException {
+		AbstractComando comando = this.factory.costruisciComando("guarda", this.console);
 		assertEquals(comando.getNome(),"Comando Guarda");
 		assertNull(comando.getParametro());
 	}
 	
 	@Test
-	void testNonValido() {
-		Comando comando = this.factory.costruisciComando("", this.console);
+	void testNonValido1() throws IllegalAccessException, NoSuchMethodException, 
+	ClassNotFoundException, InstantiationException, 
+	InvocationTargetException, SecurityException {
+		AbstractComando comando = this.factory.costruisciComando("ABC", this.console);
 		assertEquals(comando.getNome(),"Comando NonValido");
 		assertNull(comando.getParametro());
 	}
 	
 	@Test
-	void testAiuto() {
-		Comando comando = this.factory.costruisciComando("aiuto", this.console);
+	void testNonValid2() throws IllegalAccessException, NoSuchMethodException, 
+	ClassNotFoundException, InstantiationException, 
+	InvocationTargetException, SecurityException {
+		AbstractComando comando = this.factory.costruisciComando("", this.console);
+		assertEquals(comando.getNome(),"Comando NonValido");
+		assertNull(comando.getParametro());
+	}
+	
+	@Test
+	void testAiuto() throws IllegalAccessException, NoSuchMethodException, 
+	ClassNotFoundException, InstantiationException, 
+	InvocationTargetException, SecurityException {
+		AbstractComando comando = this.factory.costruisciComando("aiuto", this.console);
 		assertEquals(comando.getNome(),"Comando Aiuto");
 		assertNull(comando.getParametro());
 	}

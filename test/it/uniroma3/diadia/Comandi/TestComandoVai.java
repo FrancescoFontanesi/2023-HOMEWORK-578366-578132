@@ -2,11 +2,14 @@ package it.uniroma3.diadia.Comandi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import java.util.Scanner;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import it.uniroma3.diadia.Ambienti.Stanza;
+import it.uniroma3.diadia.Partita.IOConsole;
 import it.uniroma3.diadia.Partita.Partita;
 import it.uniroma3.diadia.Ambienti.*;
 
@@ -17,8 +20,8 @@ public class TestComandoVai {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		vai = new ComandoVai();
-		labirinto = new LabirintoBuilder()
+		vai = new ComandoVai(new IOConsole(new Scanner(System.in)));
+		labirinto = new Labirinto.LabirintoBuilder()
 				.addStanzaIniziale("start")
 				.addStanza("StNord")
 				.addStanza("StSud")
